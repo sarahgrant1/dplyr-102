@@ -15,9 +15,46 @@ library(ggplot2)
 
 ## Data Loading
 ```{r}
-#|message: false
+#| message: false
 clients<- vroom(here("data", "client.csv"))
 accounts<- vroom(here("data", "account.csv"))
 disp<- vroom(here("data", "disp.csv"))
 ```
+
+## Joining Data Tables
+A collection of joining functions of the form `_join`
+
+### Inner Join
+```{r}
+da <- inner_join(accounts, disp)
+```
+This join allows RStudio to look at columns in each table with the same name and join them via common columns to find a match.
+
+There are a few rows with repeated information for (say an account which has a different owner than client). 
+
+We want to see if there is a gender gap between account owner and client.
+
+```{r}
+cda<- inner_join(clients, da)
+```
+Now the join is by client and district. In da, the common variable is client_id and indeed district_id. If we open both da and cda, we see there are less matches in cda so we are missing some rows. So these clients are clients who no longer live in their bank district (perhaps a student who has graduated). We want to join just by client.
+```{r}
+cda<- inner_join(clients, da, by = join_by(client_id))
+```
+
+Now it is better.
+```{r}
+cda<- inner_join(clients, da, by = join_by(client_id), suffix = c("_home", "_bank"))
+```
+We are describing "_home" for clients and "_bank" for da.
+
+
+
+
+
+
+
+
+
+
 
