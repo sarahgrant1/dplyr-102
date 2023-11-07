@@ -91,11 +91,32 @@ cda |>
 chisq.test(cda|> pull(gender),
            cda|> pull(type))
 ```
-We reject null hypothesis
+We reject null hypothesis.
 
+## Loan Analysis
+```{r}
+#| message: false
+loan <- vroom(here("data", "loan.csv"))
+```
+We need to clean the data types a wee bit.
+```{r}
+loan <- loan |> 
+  mutate(status = factor(status, levels=c("A", "B", "C", "D")),
+         loan_id = as.integer(loan_id),
+         account_id = as.integer(account_id))
+```
 
+Factor recoding of `status` introduced `r loan |> filter(is.na(status)) |> nrow()` error(s).
 
-
+```{r}
+ggplot(loan, aes(x=status)) + geom_bar()
+```
+"Bad" ones are B and D so thankfully for the bank there aren't too many.
+```{r}
+loan |> 
+  group_by(status) |>
+  summarise(sum(amount))
+```
 
 
 
